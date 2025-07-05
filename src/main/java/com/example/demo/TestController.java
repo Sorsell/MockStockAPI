@@ -41,9 +41,27 @@ public class TestController {
                 } catch (Exception e) {
                     return "Invalid date format. Please use YYYY-MM-DD.";
                 }
-                Optional<StockPrice> result = stockPriceRepository.findBySymbolAndDate(symbol, localDate);
+                Optional<StockPrice> result = stockPriceRepository.findBySymbolAndDate(symbol.toUpperCase(), localDate);
                 return result
                 .map(p -> "Latest price for " + symbol.toUpperCase() + " is: " + p.getPrice() + " on " + p.getDate())
                 .orElse("No price data found for " + symbol.toUpperCase());
+    }
+
+    @DeleteMapping("/deletePrice")
+    public String deletePrice(
+            @RequestParam String symbol,
+            @RequestParam String date) {
+                LocalDate localDate;
+                try {
+                    localDate = LocalDate.parse(date);
+                } catch (Exception e) {
+                    return "Invalid date format. Please use YYYY-MM-DD.";
+                }
+                boolean deleted = stockPriceService.deletePrice(symbol.toUpperCase(), localDate);
+                if (deleted) {
+                    return "Deleted price for " + symbol.toUpperCase() + " on " + localDate;
+                } else {
+                    return "No price data found for " + symbol.toUpperCase() + " on " + localDate;
+                }
     }
 }

@@ -3,6 +3,7 @@ package com.example.demo;
 import org.springframework.stereotype.Service;
 
 import java.time.*;
+import java.util.Optional;
 
 @Service
 public class StockPriceService {
@@ -27,6 +28,15 @@ public class StockPriceService {
             }
         }
         return insertedCount;
+    }
+
+    public boolean deletePrice(String ticker, LocalDate date){
+        Optional<StockPrice> existing = stockPriceRepository.findBySymbolAndDate(ticker, date);
+        if (existing.isPresent()) {
+            stockPriceRepository.delete(existing.get());
+            return true;
+        }
+        return false;
     }
 
     private boolean exists(PolygonRequestDto.Result r,String ticker) {
